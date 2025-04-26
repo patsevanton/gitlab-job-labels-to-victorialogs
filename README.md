@@ -90,6 +90,19 @@ helm upgrade --install vm-stack vm/victoria-metrics-k8s-stack \
   --namespace vm-stack --create-namespace
 ```
 
+
+Необходимо включить либо
+```shell
+    kube-state-metrics:
+      enabled: true
+      metricLabelsAllowlist:
+        - pods=[*]
+```
+либо namespaces gitlab-runner
+https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-state-metrics/values.yaml#L397
+https://github.com/VictoriaMetrics/helm-charts/blob/master/charts/victoria-metrics-k8s-stack/values.yaml#L975C1-L975C19
+
+
 После установки, Grafana будет доступна через port-forward.
 ```shell
 kubectl port-forward -n vm-stack service/vm-stack-grafana 8080:80
