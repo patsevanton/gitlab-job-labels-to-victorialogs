@@ -2,15 +2,15 @@
 
 ## Введение — какую проблему решаем
 
-При использовании GitLab CI/CD с Kubernetes часто возникает необходимость видеть связку между логами и конкретными CI job'ами или pipeline'ами. Это особенно полезно для отладки и мониторинга. Однако по умолчанию логи из подов не содержат этих связующих метаданных.
+При использовании GitLab CI/CD с Kubernetes возникает необходимость видеть связку между логами и конкретными CI job'ами или pipeline'ами. Это особенно полезно для отладки и мониторинга. Однако по умолчанию логи из подов не содержат этих связующих метаданных.
 
-В данной статье мы покажем, как можно передавать метки `job_id`, `pipeline_id`, `project_name` и другие из GitLab Runner в систему логирования Victorialogs с помощью Promtail и корректной настройки runner'а в Kubernetes.
+В данной статье мы покажем, как можно передавать метки `job_id`, `pipeline_id`, `project_name` и другие из GitLab Runner в систему логирования VictoriaLogs с помощью Promtail и систему мониторинга VictoriaMetrics.
 
-## Почему используем Victorialogs, а не Loki
+## Почему используем VictoriaLogs, а не Loki
 
-Хотя Loki является популярным решением для логирования в Kubernetes, у него есть проблема с производительностью при большом количестве высококардинальных меток. Системы, вроде GitLab CI, где каждый job и pipeline имеет уникальные идентификаторы, создают миллионы уникальных label'ов.
+Хотя Loki является популярным решением для логирования в Kubernetes, у него есть проблема с производительностью при большом количестве высококардинальных меток. Системы, вроде GitLab CI, где каждый job и pipeline имеет уникальные идентификаторы, создают большое количестве уникальных label'ов.
 
-Victorialogs, в свою очередь, построен на базе VictoriaMetrics и лучше справляется с подобными сценариями — он эффективно обрабатывает высокую кардинальность меток, не теряя в производительности.
+VictoriaLogs превосходит Loki благодаря простой и эффективной архитектуре: единый движок обеспечивает хранение, индексацию и поиск логов без сложных распределённых компонентов. Поддерживает полнотекстовый поиск по любым полям без настройки схемы, а колоночное хранение со сжатием экономит ресурсы и ускоряет аналитические запросы. VictoriaLogs использует принципы ClickHouse для высокой производительности.
 
 ## Регистрация GitLab Runner в gitlab.com
 
@@ -20,7 +20,7 @@ Victorialogs, в свою очередь, построен на базе Victori
 2. Откройте `Settings -> CI/CD -> Runners`.
 3. Скопируйте registration token.
 
-Он понадобится на этапе установки.
+Этот токен понадобится для регистрации раннера в вашем Kubernetes-кластере.
 
 ## Быстрый старт: запуск Kubernetes и установка GitLab Runner
 
@@ -28,12 +28,11 @@ Victorialogs, в свою очередь, построен на базе Victori
 
 - minikube
 - kind
-- любой managed кластер (GKE, EKS, AKS)
+- любой managed кластер (GKE, EKS, AKS, yandex cloud)
 
 Установка GitLab Runner через Helm:
 
 ```bash
-gitlabUrl="https://gitlab.com/"
 registrationToken="<ВАШ_ТОКЕН>"
 
 helm repo add gitlab https://charts.gitlab.io
@@ -41,8 +40,7 @@ helm repo update
 
 helm upgrade --install gitlab-runner gitlab/gitlab-runner \
   --namespace gitlab-runner --create-namespace \
-  --set gitlabUrl=$gitlabUrl \
-  --set runnerRegistrationToken=$registrationToken \
+  --set runnerRegistrationToken="<YOUR_REGISTRATION_TOKEN>" \
   --values values.yaml
 ```
 
@@ -74,8 +72,6 @@ rbac:
 - `project_id`
 - `pipeline_id`
 
-Эти метки будут прикреплены к каждому поду, и Promtail сможет использовать их для маркировки логов.
-
 ## Установка victoria-metrics-k8s-stack
 
 Добавим Helm репозиторий и установим VictoriaMetrics stack:
@@ -88,23 +84,24 @@ helm upgrade --install vm-stack vm/victoria-metrics-k8s-stack \
   --namespace monitoring --create-namespace
 ```
 
-После установки откройте Grafana (по умолчанию — портфорвард с `kubectl port-forward`), и вы увидите метки `job_id`, `pipeline_id` в Prometheus данных.
+После установки, Grafana будет доступна через NodePort или Ingress (в зависимости от конфигурации).
 
-## Установка victorialogs и promtail
+В Grafana уже будут видны метки, переданные из GitLab Runner (`job_id`, `pipeline_id` и т.д.).
 
-Victorialogs можно развернуть через Helm или манифесты. После этого устанавливаем Promtail:
+## Установка VictoriaLogs и Promtail
 
+### Установка VictoriaLogs
 ```bash
-helm repo add grafana https://grafana.github.io/helm-charts
+helm repo add vm https://victoriametrics.github.io/helm-charts/
 helm repo update
 
-helm upgrade --install promtail grafana/promtail \
-  --namespace logging --create-namespace \
-  -f promtail-values.yaml
+helm install victorialogs vm/victoria-logs-single \
+  --namespace victorialogs --create-namespace
 ```
 
-Пример `promtail-values.yaml`:
+### Настройка Promtail для захвата меток
 
+Файл конфигурации Promtail `promtail-values.yaml`:
 ```yaml
 tolerations:
   - operator: Exists
@@ -112,7 +109,7 @@ tolerations:
 
 config:
   clients:
-    - url: http://victorialogs.corp/insert/loki/api/v1/push?_msg_field=msg
+    - url: http://victorialogs.victorialogs.svc.cluster.local:9428/insert/loki/api/v1/push?_msg_field=msg
 
   snippets:
     pipelineStages:
@@ -138,18 +135,25 @@ config:
         target_label: project_name
 ```
 
-## Просмотр как это выглядит в victorialogs
+### Установка Promtail
+```bash
+helm upgrade --install promtail grafana/promtail \
+  --namespace promtail --create-namespace \
+  -f promtail-values.yaml
+```
 
-После запуска всех компонентов и выполнения одного или нескольких job'ов в GitLab, вы можете зайти в UI Victorialogs и убедиться, что:
+## Просмотр как это выглядит в VictoriaLogs
 
-- логи видны;
-- у логов присутствуют метки: `job_name`, `pipeline_id`, `project_name` и т.д.
+1. Зайдите в UI VictoriaLogs (обычно на `/select/`) или подключитесь к Grafana.
+2. Выполните запросы с фильтрацией по `job_id`, `pipeline_id`, например:
+```logql
+{ci_pipeline_id="12345678"}
+```
 
 Теперь вы можете фильтровать логи по job, pipeline и другим CI-метаданным, что значительно упрощает отладку и мониторинг процессов.
 
 ## Заключение
 
-Мы рассмотрели, как с помощью GitLab Runner, Promtail и Victorialogs можно отправлять CI-метаданные в систему логирования. Это решение масштабируемо и устойчиво к высоким нагрузкам, в отличие от стандартного стека Loki.
+Теперь вы можете легко отслеживать, какие логи/метрики относятся к какому pipeline и job'у. Использование VictoriaLogs позволяет справляться с большим объемом уникальных меток. Этот подход хорошо масштабируется и обеспечивает гибкую, но мощную систему обсервабилити для CI/CD процессов в Kubernetes.
 
 С добавлением всего нескольких строк в конфигурацию вы получаете мощный инструмент для мониторинга и отладки CI/CD pipeline'ов.
-
