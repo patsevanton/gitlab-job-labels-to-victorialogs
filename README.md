@@ -73,6 +73,11 @@ rbac:
 - `project_id`
 - `pipeline_id`
 
+Просмотр сырых метрик GitLab Runner
+```shell
+kubectl port-forward -n gitlab-runner service/gitlab-runner 9252
+```
+
 ## Установка victoria-metrics-k8s-stack
 
 Добавим Helm репозиторий и установим VictoriaMetrics stack:
@@ -85,7 +90,10 @@ helm upgrade --install vm-stack vm/victoria-metrics-k8s-stack \
   --namespace vm-stack --create-namespace
 ```
 
-После установки, Grafana будет доступна через NodePort или Ingress (в зависимости от конфигурации).
+После установки, Grafana будет доступна через port-forward.
+```shell
+kubectl port-forward -n vm-stack service/vm-stack-grafana 8080:80
+```
 
 В Grafana уже будут видны метки, переданные из GitLab Runner (`job_id`, `pipeline_id` и т.д.).
 
