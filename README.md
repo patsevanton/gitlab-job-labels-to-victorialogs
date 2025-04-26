@@ -108,6 +108,11 @@ https://github.com/VictoriaMetrics/helm-charts/blob/master/charts/victoria-metri
 kubectl port-forward -n vm-stack service/vm-stack-grafana 8080:80
 ```
 
+Получение пароля grafana
+```shell
+kubectl get secret vm-stack-grafana -n vm-stack -o jsonpath='{.data.admin-password}' | base64 --decode
+```
+
 В Grafana уже будут видны метки, переданные из GitLab Runner (`job_id`, `pipeline_id` и т.д.).
 
 ## Установка VictoriaLogs и Promtail
