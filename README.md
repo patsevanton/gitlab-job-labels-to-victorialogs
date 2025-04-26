@@ -1,13 +1,16 @@
 
 # Отправка label в систему логирования и мониторинга из метаданных gitlab runner (job_id, pipeline_id)
 
-## Введение
-
-При интеграции GitLab CI/CD с Kubernetes и системой логирования Victorialogs через Promtail важно сохранять контекст выполнения заданий. Использование меток (labels) Kubernetes помогает маркировать pod'ы нужной информацией, а Promtail может эти метки извлекать и передавать в Victorialogs.
-
-## Часть 1: Настройка GitLab Runner с метками
-
-В конфигурации GitLab Runner, работающего в Kubernetes, вы можете задать метки для каждого создаваемого pod'а:
+Содержание
+- Введение - какую проблему решаем
+- Почему используем victorialogs, а не Loki (Причина большое кол-во высококардинальных метрик)
+- Регистрация gitlab runner в gitlab.com (запоминаем token)
+- Быстрый старт: запуск k8s, установка gitlab runner.
+- Настройка gitlab runner
+- Установка victoria-metrics-k8s-stack. Видим что в grafana, которая доступна после установки victoria-metrics-k8s-stack, появились label по job_id, pipeline_id
+- Установка victorialogs и promtail. Настройка promtail чтобы он преобразовывал label pod в label в системе мониторинга
+- Просмотр как это выглядит в victorialogs
+- Заключение
 
 ```yaml
 gitlabUrl: "https://gitlab.com/"
@@ -25,11 +28,8 @@ rbac:
   create: true
 ```
 
-Эти переменные GitLab CI автоматически заменяются на соответствующие значения при создании pod'ов. Метки позволяют Promtail точно идентифицировать, какому проекту и пайплайну принадлежат логи.
-
 ## Часть 2: Настройка Promtail для захвата меток
 
-Promtail собирает логи из pod'ов и может извлекать метки, заданные в Kubernetes, и передавать их в Victorialogs. Вот пример конфигурации:
 
 ```yaml
 tolerations:
@@ -63,13 +63,3 @@ config:
           - __meta_kubernetes_pod_label_project_name
         target_label: project_name
 ```
-
-Здесь Promtail:
-
-1. Извлекает стандартные Kubernetes метки (`__meta_kubernetes_pod_label_*`).
-2. Переносит их в собственные метки `ci_pipeline_id`, `job_name`, `project_name`.
-3. Передаёт эти логи и метки в Victorialogs через указанный URL.
-
-## Заключение
-
-Таким образом, вы получаете связку: GitLab Runner → Kubernetes → Promtail → Victorialogs, где логи каждого задания содержат всю необходимую информацию о пайплайне и проекте. Это значительно упрощает отладку и мониторинг CI/CD процессов.
