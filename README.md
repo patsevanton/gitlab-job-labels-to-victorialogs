@@ -65,18 +65,14 @@ rbac:
   create: true
 ```
 
-## Настройка GitLab Runner
-После установки Runner начнёт запускать поды с метками:
-
-- `job_name`
-- `job_id`
-- `project_name`
-- `project_id`
-- `pipeline_id`
-
-Просмотр сырых метрик GitLab Runner
+## Проверка, что у pod есть label
+Запустите сборку на этом раннере и проверьте label
+Должно быть примерно так
 ```shell
-kubectl port-forward -n gitlab-runner service/gitlab-runner 9252
+kubectl get pod -n gitlab-runner --show-labels
+NAME                                                      READY   STATUS        RESTARTS   AGE   LABELS
+gitlab-runner-5fd7489954-jx682                            1/1     Running       0          27m   app=gitlab-runner,chart=gitlab-runner-0.76.0,heritage=Helm,pod-template-hash=5fd7489954,release=gitlab-runner
+runner-3lj4ihzt1-project-69309276-concurrent-0-shpvdimu   2/2     Terminating   0          21s   job.runner.gitlab.com/pod=runner-3lj4ihzt1-project-69309276-concurrent-0,job_id=9838839173,job_name=build-job,manager.runner.gitlab.com/id-short=3LJ4iHZt1,manager.runner.gitlab.com/name=gitlab-runner-5fd7489954-jx682,pipeline_id=1787794791,pod=runner-3lj4ihzt1-project-69309276-concurrent-0,project.runner.gitlab.com/id=69309276,project.runner.gitlab.com/name=gitlab-for-job-labels-to-victorialogs,project.runner.gitlab.com/namespace-id=1739251,project.runner.gitlab.com/namespace=anton_patsev,project.runner.gitlab.com/root-namespace=anton_patsev,project_id=69309276,project_name=gitlab-for-job-labels-to-victorialogs
 ```
 
 ## Установка victoria-metrics-k8s-stack
@@ -92,10 +88,7 @@ helm upgrade --install vm-stack vm/victoria-metrics-k8s-stack \
   --values vm-stack-values.yaml
 ```
 
-
-Кube-state-metrics, разрешая экспорт всех метрик ([*]), связанных с подами (pods). 
-Параметр metricLabelsAllowlist указывает, какие именно метки (labels) можно собирать.
-В данном случае все ([*]) для ресурса pods
+В values указываем что kube-state-metrics, разрешая экспорт всех метрик ([*]), связанных с подами (pods).
 ```shell
 kube-state-metrics:
   metricLabelsAllowlist:
