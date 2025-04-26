@@ -1,5 +1,5 @@
 
-# Создание Kubernetes labels для GitLab Runner и отправка логов в Victorialogs через Promtail
+# Отправка label в систему логирования и мониторинга из метаданных gitlab runner (job_id, pipeline_id)
 
 ## Введение
 
@@ -9,7 +9,7 @@
 
 В конфигурации GitLab Runner, работающего в Kubernetes, вы можете задать метки для каждого создаваемого pod'а:
 
-```toml
+```yaml
 gitlabUrl: "https://gitlab.com/"
 runners:
   config: |
