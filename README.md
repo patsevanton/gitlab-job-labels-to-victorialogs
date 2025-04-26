@@ -113,7 +113,14 @@ kubectl port-forward -n vm-stack service/vm-stack-grafana 8080:80
 kubectl get secret vm-stack-grafana -n vm-stack -o jsonpath='{.data.admin-password}' | base64 --decode
 ```
 
+Вы можете увидеть метрики по pod
+```shell
+node_namespace_pod_container:container_memory_working_set_bytes{namespace="gitlab-runner", pod="runner-3lj4ihzt1-project-69309276-concurrent-0-0066ip3c"}
+```
+
 В Grafana уже будут видны метки, переданные из GitLab Runner (`job_id`, `pipeline_id` и т.д.).
+
+
 
 ## Установка VictoriaLogs и Promtail
 
