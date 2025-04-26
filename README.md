@@ -22,32 +22,29 @@ VictoriaLogs превосходит Loki благодаря простой и э
 
 Этот токен понадобится для регистрации раннера в вашем Kubernetes-кластере.
 
-## Быстрый старт: запуск Kubernetes и установка GitLab Runner
+## Запуск Kubernetes и установка GitLab Runner
 
-Для запуска Kubernetes можно использовать:
-
-- minikube
-- kind
-- любой managed кластер (GKE, EKS, AKS, yandex cloud)
+```shell
+kind create cluster --name test-gitlab-runner
+kubectl cluster-info --context kind-test-gitlab-runner
+```
 
 Установка GitLab Runner через Helm:
 
 ```bash
-registrationToken="<ВАШ_ТОКЕН>"
-
 helm repo add gitlab https://charts.gitlab.io
 helm repo update
 
 helm upgrade --install gitlab-runner gitlab/gitlab-runner \
   --namespace gitlab-runner --create-namespace \
-  --set runnerRegistrationToken="<YOUR_REGISTRATION_TOKEN>" \
-  --values values.yaml
+  --values gitlab-runner-values.yaml
 ```
 
-Пример `values.yaml`:
+Пример `gitlab-runner-values.yaml`:
 
 ```yaml
 gitlabUrl: "https://gitlab.com/"
+runnerToken: "<YOUR_REGISTRATION_TOKEN>"
 runners:
   config: |
     [[runners]]
