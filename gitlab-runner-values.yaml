@@ -10,5 +10,11 @@ runners:
           "project_name" = "${CI_PROJECT_NAME}"
           "project_id" = "${CI_PROJECT_ID}"
           "pipeline_id" = "${CI_PIPELINE_ID}"
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+service:
+  enabled: true
 rbac:
   create: true

@@ -24,13 +24,13 @@ VictoriaLogs превосходит Loki благодаря простой и э
 
 ## Запуск Kubernetes и установка GitLab Runner
 
+Установка kubernetes через kind
 ```shell
 kind create cluster --name test-gitlab-runner
 kubectl cluster-info --context kind-test-gitlab-runner
 ```
 
 Установка GitLab Runner через Helm:
-
 ```bash
 helm repo add gitlab https://charts.gitlab.io
 helm repo update
@@ -41,7 +41,6 @@ helm upgrade --install gitlab-runner gitlab/gitlab-runner \
 ```
 
 Пример `gitlab-runner-values.yaml`:
-
 ```yaml
 gitlabUrl: "https://gitlab.com/"
 runnerToken: "<YOUR_REGISTRATION_TOKEN>"
@@ -55,12 +54,17 @@ runners:
           "project_name" = "${CI_PROJECT_NAME}"
           "project_id" = "${CI_PROJECT_ID}"
           "pipeline_id" = "${CI_PIPELINE_ID}"
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+service:
+  enabled: true
 rbac:
   create: true
 ```
 
 ## Настройка GitLab Runner
-
 После установки Runner начнёт запускать поды с метками:
 
 - `job_name`
@@ -78,7 +82,7 @@ helm repo add vm https://victoriametrics.github.io/helm-charts/
 helm repo update
 
 helm upgrade --install vm-stack vm/victoria-metrics-k8s-stack \
-  --namespace monitoring --create-namespace
+  --namespace vm-stack --create-namespace
 ```
 
 После установки, Grafana будет доступна через NodePort или Ingress (в зависимости от конфигурации).
@@ -106,7 +110,7 @@ tolerations:
 
 config:
   clients:
-    - url: http://victorialogs.victorialogs.svc.cluster.local:9428/insert/loki/api/v1/push?_msg_field=msg
+    - url: http://victorialogs-victoria-logs-single-server.victorialogs.svc.cluster.local.:9428/insert/loki/api/v1/push?_msg_field=msg
 
   snippets:
     pipelineStages:
@@ -148,6 +152,11 @@ helm upgrade --install promtail grafana/promtail \
 ```
 
 Теперь вы можете фильтровать логи по job, pipeline и другим CI-метаданным, что значительно упрощает отладку и мониторинг процессов.
+
+## Удаление kubernetes через kind
+```shell
+kind delete cluster --name test-gitlab-runner
+```
 
 ## Заключение
 
