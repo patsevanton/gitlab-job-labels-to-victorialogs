@@ -87,16 +87,16 @@ helm repo add vm https://victoriametrics.github.io/helm-charts/
 helm repo update
 
 helm upgrade --install vm-stack vm/victoria-metrics-k8s-stack \
-  --namespace vm-stack --create-namespace
+  --namespace vm-stack --create-namespace \
+  --values vm-stack-values.yaml
 ```
 
 
 Необходимо включить либо
 ```shell
-    kube-state-metrics:
-      enabled: true
-      metricLabelsAllowlist:
-        - pods=[*]
+kube-state-metrics:
+  metricLabelsAllowlist:
+    - namespaces=["gitlab-runner"]
 ```
 либо namespaces gitlab-runner
 https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-state-metrics/values.yaml#L397
