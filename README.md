@@ -18,7 +18,8 @@ VictoriaLogs превосходит Loki благодаря простой и э
 
 1. Перейдите в репозиторий GitLab.
 2. Откройте `Settings -> CI/CD -> Runners`.
-3. Скопируйте registration token.
+3. Выключите общие раннеры
+4. Скопируйте registration token.
 
 Этот токен понадобится для регистрации раннера в вашем Kubernetes-кластере.
 
@@ -92,13 +93,16 @@ helm upgrade --install vm-stack vm/victoria-metrics-k8s-stack \
 ```
 
 
-Необходимо включить либо
+Кube-state-metrics, разрешая экспорт всех метрик ([*]), связанных с подами (pods). 
+Параметр metricLabelsAllowlist указывает, какие именно метки (labels) можно собирать.
+В данном случае все ([*]) для ресурса pods
 ```shell
 kube-state-metrics:
   metricLabelsAllowlist:
-    - namespaces=["gitlab-runner"]
+    - pods=[*]
 ```
-либо namespaces gitlab-runner
+
+Подробности в values kube-state-metrics и victoria-metrics-k8s-stack:
 https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-state-metrics/values.yaml#L397
 https://github.com/VictoriaMetrics/helm-charts/blob/master/charts/victoria-metrics-k8s-stack/values.yaml#L975C1-L975C19
 
