@@ -115,10 +115,7 @@ https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-state-
 https://github.com/VictoriaMetrics/helm-charts/blob/master/charts/victoria-metrics-k8s-stack/values.yaml#L975C1-L975C19
 
 
-После установки, Grafana будет доступна через port-forward.
-```shell
-kubectl port-forward -n vm-stack service/vm-stack-grafana 8080:80
-```
+После установки, Grafana будет доступна по адресу http://grafana.apatsev.org.ru
 
 Получение пароля grafana
 ```shell
