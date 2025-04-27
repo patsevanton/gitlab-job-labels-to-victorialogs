@@ -119,7 +119,7 @@ https://github.com/VictoriaMetrics/helm-charts/blob/master/charts/victoria-metri
 
 Получение пароля grafana
 ```shell
-kubectl get secret vm-stack-grafana -n vm-stack -o jsonpath='{.data.admin-password}' | base64 --decode
+kubectl get secret vmks-grafana -n vmks -o jsonpath='{.data.admin-password}' | base64 --decode
 ```
 
 Вы можете увидеть метрики по pod
