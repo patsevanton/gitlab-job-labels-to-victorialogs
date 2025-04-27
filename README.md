@@ -140,6 +140,8 @@ helm install victorialogs vm/victoria-logs-single \
   --namespace victorialogs --create-namespace
 ```
 
+После установки, victorialogs будет доступен по адресу http://victorialogs.apatsev.org.ru
+
 ### Настройка Promtail для захвата меток
 
 Файл конфигурации Promtail `promtail-values.yaml`:
