@@ -136,8 +136,9 @@ node_namespace_pod_container:container_memory_working_set_bytes{namespace="gitla
 helm repo add vm https://victoriametrics.github.io/helm-charts/
 helm repo update
 
-helm install victorialogs vm/victoria-logs-single \
-  --namespace victorialogs --create-namespace
+helm upgrade --install victorialogs vm/victoria-logs-single \
+  --namespace victorialogs --create-namespace \
+  --values victorialogs-values.yaml
 ```
 
 После установки, victorialogs будет доступен по адресу http://victorialogs.apatsev.org.ru
