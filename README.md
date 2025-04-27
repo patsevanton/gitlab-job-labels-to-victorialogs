@@ -117,7 +117,7 @@ https://github.com/VictoriaMetrics/helm-charts/blob/master/charts/victoria-metri
 
 После установки, Grafana будет доступна по адресу http://grafana.apatsev.org.ru
 
-Получение пароля grafana
+Получение пароля grafana для admin юзера
 ```shell
 kubectl get secret vmks-grafana -n vmks -o jsonpath='{.data.admin-password}' | base64 --decode
 ```
