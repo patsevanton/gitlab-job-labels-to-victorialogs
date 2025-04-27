@@ -41,6 +41,7 @@
 
 Установка kubernetes через terraform
 ```shell
+git clone https://github.com/patsevanton/gitlab-job-labels-to-victorialogs
 export YC_FOLDER_ID='ваш folder_id'
 terraform init
 terraform apply
