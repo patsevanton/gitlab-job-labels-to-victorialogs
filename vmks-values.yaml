@@ -1,6 +1,5 @@
 grafana:
   plugins:
-#    - victoriametrics-metrics-datasource
     - victoriametrics-logs-datasource
   ingress:
     ingressClassName: nginx
