@@ -129,8 +129,6 @@ node_namespace_pod_container:container_memory_working_set_bytes{namespace="gitla
 
 В Grafana уже будут видны метки, переданные из GitLab Runner (`job_id`, `pipeline_id` и т.д.).
 
-
-
 ## Установка VictoriaLogs и Promtail
 
 ### Установка VictoriaLogs
