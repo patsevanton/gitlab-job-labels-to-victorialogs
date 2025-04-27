@@ -98,9 +98,9 @@ runner-3lj4ihzt1-project-69309276-concurrent-0-shpvdimu   2/2     Terminating   
 helm repo add vm https://victoriametrics.github.io/helm-charts/
 helm repo update
 
-helm upgrade --install vm-stack vm/victoria-metrics-k8s-stack \
-  --namespace vm-stack --create-namespace \
-  --values vm-stack-values.yaml
+helm upgrade --install vmks vm/victoria-metrics-k8s-stack \
+  --namespace vmks --create-namespace \
+  --values vmks-values.yaml
 ```
 
 В values указываем что kube-state-metrics, разрешая экспорт всех метрик ([*]), связанных с подами (pods).
