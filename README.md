@@ -35,6 +35,7 @@ VictoriaLogs использует принципы ClickHouse для высок�
 
 Установка kubernetes через terraform
 ```shell
+export YC_FOLDER_ID='ваш folder_id'
 terraform init
 terraform apply
 ```
