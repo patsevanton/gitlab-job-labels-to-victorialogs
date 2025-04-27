@@ -4,7 +4,7 @@ tolerations:
 
 config:
   clients:
-    - url: http://victorialogs.victorialogs.svc.cluster.local:9428/insert/loki/api/v1/push?_msg_field=msg
+    - url: http://victorialogs-victoria-logs-single-server.victorialogs.svc.cluster.local:9428/insert/loki/api/v1/push?_msg_field=msg
 
   snippets:
     pipelineStages:
