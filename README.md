@@ -151,29 +151,32 @@ helm upgrade --install victorialogs vm/victoria-logs-single \
 tolerations:
   - operator: Exists
     effect: NoSchedule
-
 config:
   clients:
-    - url: http://victorialogs-victoria-logs-single-server.victorialogs.svc.cluster.local.:9428/insert/loki/api/v1/push?_msg_field=msg
-
+    - url: http://victorialogs-victoria-logs-single-server.victorialogs.svc.cluster.local:9428/insert/loki/api/v1/push?_msg_field=msg
   snippets:
     pipelineStages:
       - cri: {}
       - labeldrop:
           - filename
           - node_name
-
     extraRelabelConfigs:
       - action: replace
         source_labels:
-          - __meta_kubernetes_pod_label_ci_pipeline_id
-        target_label: ci_pipeline_id
-
+          - __meta_kubernetes_pod_label_job_id
+        target_label: job_id
       - action: replace
         source_labels:
           - __meta_kubernetes_pod_label_job_name
         target_label: job_name
-
+      - action: replace
+        source_labels:
+          - __meta_kubernetes_pod_label_pipeline_id
+        target_label: pipeline_id
+      - action: replace
+        source_labels:
+          - __meta_kubernetes_pod_label_project_id
+        target_label: project_id
       - action: replace
         source_labels:
           - __meta_kubernetes_pod_label_project_name
