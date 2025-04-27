@@ -1,3 +1,6 @@
+grafana:
+  ingress:
+    enabled: true
 kube-state-metrics:
   metricLabelsAllowlist:
     - pods=[*]

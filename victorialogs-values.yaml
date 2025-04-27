@@ -1,0 +1,11 @@
+server:
+  persistentVolume:
+    enabled: true
+  ingress:
+    enabled: true
+    hosts:
+      - name: victorialogs.apatsev.org.ru
+        path:
+          - /
+        port: http
+    ingressClassName: nginx
