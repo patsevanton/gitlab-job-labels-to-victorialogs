@@ -23,15 +23,15 @@ resource "time_sleep" "wait_sa" {
 }
 
 # Создание Kubernetes-кластера в Yandex Cloud
-resource "yandex_kubernetes_cluster" "pyroscope" {
-  name       = "pyroscope"  # Имя кластера
-  network_id = yandex_vpc_network.pyroscope.id  # Сеть, к которой подключается кластер
+resource "yandex_kubernetes_cluster" "gitlab-runner" {
+  name       = "gitlab-runner"  # Имя кластера
+  network_id = yandex_vpc_network.gitlab-runner.id  # Сеть, к которой подключается кластер
 
   master {
     version = "1.30"  # Версия Kubernetes мастера
     zonal {
-      zone      = yandex_vpc_subnet.pyroscope-a.zone  # Зона размещения мастера
-      subnet_id = yandex_vpc_subnet.pyroscope-a.id     # Подсеть для мастера
+      zone      = yandex_vpc_subnet.gitlab-runner-a.zone  # Зона размещения мастера
+      subnet_id = yandex_vpc_subnet.gitlab-runner-a.id     # Подсеть для мастера
     }
 
     public_ip = true  # Включение публичного IP для доступа к мастеру
@@ -51,7 +51,7 @@ resource "yandex_kubernetes_cluster" "pyroscope" {
 resource "yandex_kubernetes_node_group" "k8s-node-group" {
   description = "Node group for the Managed Service for Kubernetes cluster"
   name        = "k8s-node-group"
-  cluster_id  = yandex_kubernetes_cluster.pyroscope.id
+  cluster_id  = yandex_kubernetes_cluster.gitlab-runner.id
   version     = "1.30"  # Версия Kubernetes на нодах
 
   scale_policy {
@@ -62,9 +62,9 @@ resource "yandex_kubernetes_node_group" "k8s-node-group" {
 
   allocation_policy {
     # Распределение нод по зонам отказоустойчивости
-    location { zone = yandex_vpc_subnet.pyroscope-a.zone }
-    location { zone = yandex_vpc_subnet.pyroscope-b.zone }
-    location { zone = yandex_vpc_subnet.pyroscope-d.zone }
+    location { zone = yandex_vpc_subnet.gitlab-runner-a.zone }
+    location { zone = yandex_vpc_subnet.gitlab-runner-b.zone }
+    location { zone = yandex_vpc_subnet.gitlab-runner-d.zone }
   }
 
   instance_template {
@@ -73,9 +73,9 @@ resource "yandex_kubernetes_node_group" "k8s-node-group" {
     network_interface {
       nat = true  # Включение NAT для доступа в интернет
       subnet_ids = [
-        yandex_vpc_subnet.pyroscope-a.id,
-        yandex_vpc_subnet.pyroscope-b.id,
-        yandex_vpc_subnet.pyroscope-d.id
+        yandex_vpc_subnet.gitlab-runner-a.id,
+        yandex_vpc_subnet.gitlab-runner-b.id,
+        yandex_vpc_subnet.gitlab-runner-d.id
       ]
     }
 
@@ -94,8 +94,8 @@ resource "yandex_kubernetes_node_group" "k8s-node-group" {
 # Настройка провайдера Helm для установки чарта в Kubernetes
 provider "helm" {
   kubernetes {
-    host                   = yandex_kubernetes_cluster.pyroscope.master[0].external_v4_endpoint  # Адрес API Kubernetes
-    cluster_ca_certificate = yandex_kubernetes_cluster.pyroscope.master[0].cluster_ca_certificate  # CA-сертификат
+    host                   = yandex_kubernetes_cluster.gitlab-runner.master[0].external_v4_endpoint  # Адрес API Kubernetes
+    cluster_ca_certificate = yandex_kubernetes_cluster.gitlab-runner.master[0].cluster_ca_certificate  # CA-сертификат
 
     exec {
       api_version = "client.authentication.k8s.io/v1beta1"
@@ -113,7 +113,7 @@ resource "helm_release" "ingress_nginx" {
   version          = "4.10.6"
   namespace        = "ingress-nginx"
   create_namespace = true
-  depends_on       = [yandex_kubernetes_cluster.pyroscope]
+  depends_on       = [yandex_kubernetes_cluster.gitlab-runner]
 
   set {
     name  = "controller.service.loadBalancerIP"
@@ -123,5 +123,5 @@ resource "helm_release" "ingress_nginx" {
 
 # Вывод команды для получения kubeconfig
 output "k8s_cluster_credentials_command" {
-  value = "yc managed-kubernetes cluster get-credentials --id ${yandex_kubernetes_cluster.pyroscope.id} --external --force"
+  value = "yc managed-kubernetes cluster get-credentials --id ${yandex_kubernetes_cluster.gitlab-runner.id} --external --force"
 }
