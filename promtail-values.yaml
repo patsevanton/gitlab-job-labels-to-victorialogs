@@ -3,7 +3,7 @@ tolerations:
     effect: NoSchedule
 config:
   clients:
-    - url: http://victorialogs-victoria-logs-single-server.victorialogs.svc.cluster.local:9428/insert/loki/api/v1/push?_msg_field=msg
+    - url: http://victorialogs-victoria-logs-single-server.victorialogs.svc.cluster.local:9428/insert/loki/api/v1/push?_msg_field=msg&debug=1
   snippets:
     pipelineStages:
       - cri: {}
@@ -15,3 +15,23 @@ config:
         source_labels:
           - __meta_kubernetes_namespace
         regex: gitlab-runner
+      - action: replace
+        source_labels:
+          - __meta_kubernetes_pod_label_job_id
+        target_label: job_id
+      - action: replace
+        source_labels:
+          - __meta_kubernetes_pod_label_job_name
+        target_label: job_name
+      - action: replace
+        source_labels:
+          - __meta_kubernetes_pod_label_pipeline_id
+        target_label: pipeline_id
+      - action: replace
+        source_labels:
+          - __meta_kubernetes_pod_label_project_id
+        target_label: project_id
+      - action: replace
+        source_labels:
+          - __meta_kubernetes_pod_label_project_name
+        target_label: project_name
