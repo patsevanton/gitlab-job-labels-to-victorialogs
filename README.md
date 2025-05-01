@@ -179,9 +179,8 @@ rbac:
 Запустите сборку на этом раннере и проверьте label
 Должно быть примерно так
 ```shell
-kubectl get pod -n gitlab-runner --show-labels
+kubectl get pod -n gitlab-runner --show-labels | grep -E '(job_name|job_id|project_name|project_id|pipeline_id)'
 NAME                                                      READY   STATUS        RESTARTS   AGE   LABELS
-gitlab-runner-5fd7489954-jx682                            1/1     Running       0          27m   app=gitlab-runner,chart=gitlab-runner-0.76.0,heritage=Helm,pod-template-hash=5fd7489954,release=gitlab-runner
 runner-3lj4ihzt1-project-69309276-concurrent-0-shpvdimu   2/2     Terminating   0          21s   job.runner.gitlab.com/pod=runner-3lj4ihzt1-project-69309276-concurrent-0,job_id=9838839173,job_name=build-job,manager.runner.gitlab.com/id-short=3LJ4iHZt1,manager.runner.gitlab.com/name=gitlab-runner-5fd7489954-jx682,pipeline_id=1787794791,pod=runner-3lj4ihzt1-project-69309276-concurrent-0,project.runner.gitlab.com/id=69309276,project.runner.gitlab.com/name=gitlab-for-job-labels-to-victorialogs,project.runner.gitlab.com/namespace-id=1739251,project.runner.gitlab.com/namespace=anton_patsev,project.runner.gitlab.com/root-namespace=anton_patsev,project_id=69309276,project_name=gitlab-for-job-labels-to-victorialogs
 ```
 
