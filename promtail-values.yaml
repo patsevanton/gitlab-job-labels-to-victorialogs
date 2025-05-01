@@ -3,7 +3,7 @@ tolerations:
     effect: NoSchedule
 config:
   clients:
-    - url: http://victorialogs-victoria-logs-single-server.victorialogs.svc.cluster.local:9428/insert/loki/api/v1/push?_msg_field=msg&debug=1
+    - url: http://victorialogs-victoria-logs-single-server.victorialogs.svc.cluster.local:9428/insert/loki/api/v1/push?_msg_field=msg
   snippets:
     pipelineStages:
       - cri: {}
