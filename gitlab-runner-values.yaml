@@ -1,5 +1,5 @@
 gitlabUrl: "https://gitlab.com/"
-runnerToken: "<YOUR_REGISTRATION_TOKEN>"
+
 metrics:
   enabled: true
   serviceMonitor:
