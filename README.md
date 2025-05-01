@@ -180,8 +180,9 @@ rbac:
 Должно быть примерно так
 ```shell
 kubectl get pod -n gitlab-runner --show-labels | grep -E '(job_name|job_id|project_name|project_id|pipeline_id)'
-NAME                                                      READY   STATUS        RESTARTS   AGE   LABELS
-runner-3lj4ihzt1-project-69309276-concurrent-0-shpvdimu   2/2     Terminating   0          21s   job.runner.gitlab.com/pod=runner-3lj4ihzt1-project-69309276-concurrent-0,job_id=9838839173,job_name=build-job,manager.runner.gitlab.com/id-short=3LJ4iHZt1,manager.runner.gitlab.com/name=gitlab-runner-5fd7489954-jx682,pipeline_id=1787794791,pod=runner-3lj4ihzt1-project-69309276-concurrent-0,project.runner.gitlab.com/id=69309276,project.runner.gitlab.com/name=gitlab-for-job-labels-to-victorialogs,project.runner.gitlab.com/namespace-id=1739251,project.runner.gitlab.com/namespace=anton_patsev,project.runner.gitlab.com/root-namespace=anton_patsev,project_id=69309276,project_name=gitlab-for-job-labels-to-victorialogs
+runner-sijwob5yi-project-69309276-concurrent-0-7hr533es   2/2     Running   0          16s     ...,job_id=9895041344,job_name=deploy-job,pipeline_id=1796027502,pod=runner-sijwob5yi-project-69309276-concurrent-0,project_id=69309276,project_name=gitlab-for-job-labels-to-victorialogs
+runner-sijwob5yi-project-69309276-concurrent-0-pfirp5t5   2/2     Running   0          49s     ...,job_id=9895041322,job_name=unit-test-job,pipeline_id=1796027502,pod=runner-sijwob5yi-project-69309276-concurrent-0,project_id=69309276,project_name=gitlab-for-job-labels-to-victorialogs
+runner-sijwob5yi-project-69309276-concurrent-1-85wx1m9n   2/2     Running   0          44s     ...,job_id=9895041335,job_name=lint-test-job,pipeline_id=1796027502,pod=runner-sijwob5yi-project-69309276-concurrent-1,project_id=69309276,project_name=gitlab-for-job-labels-to-victorialog
 ```
 
 ## Удаление kubernetes через terraform
