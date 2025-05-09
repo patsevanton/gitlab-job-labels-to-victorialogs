@@ -1830,14 +1830,14 @@
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 2,
-        "regex": "/^(gitlab-runner.*|gl-runner.*|infra-gitlab-runner.*)/",
+        "regex": "/^(gitlab-runner.*)/",
         "sort": 1,
         "type": "query"
       },
       {
         "current": {
-          "text": "build-job",
-          "value": "build-job"
+          "text": "All",
+          "value": "$__all"
         },
         "datasource": {
           "type": "prometheus",
@@ -1860,8 +1860,8 @@
       },
       {
         "current": {
-          "text": "gitlab-for-job-labels-to-victorialogs",
-          "value": "gitlab-for-job-labels-to-victorialogs"
+          "text": "All",
+          "value": "$__all"
         },
         "datasource": {
           "type": "prometheus",
@@ -1883,8 +1883,8 @@
       },
       {
         "current": {
-          "text": "1808762440",
-          "value": "1808762440"
+          "text": "All",
+          "value": "$__all"
         },
         "datasource": {
           "type": "prometheus",
@@ -1906,8 +1906,8 @@
       },
       {
         "current": {
-          "text": "runner-y1xyfqzhk-project-69309276-concurrent-0-bv80xnt0",
-          "value": "runner-y1xyfqzhk-project-69309276-concurrent-0-bv80xnt0"
+          "text": "All",
+          "value": "$__all"
         },
         "datasource": {
           "type": "prometheus",
@@ -1920,29 +1920,6 @@
         "query": {
           "qryType": 1,
           "query": "label_values(kube_pod_labels{namespace=\"$namespace\", label_job_name=~\"$label_job_name\", label_project_name=~\"$label_project_name\", label_pipeline_id=~\"$label_pipeline_id\"},pod)",
-          "refId": "PrometheusVariableQueryEditor-VariableQuery"
-        },
-        "refresh": 2,
-        "regex": "",
-        "sort": 1,
-        "type": "query"
-      },
-      {
-        "current": {
-          "text": "All",
-          "value": "$__all"
-        },
-        "datasource": {
-          "type": "prometheus",
-          "uid": "${datasource}"
-        },
-        "definition": "label_values(kube_pod_labels{namespace=\"$namespace\", label_job_name=~\"$label_job_name\", label_project_name=~\"$label_project_name\", pod=~\"$pod\"},label_pipeline_id_pod)",
-        "includeAll": true,
-        "name": "label_pipeline_id_pod",
-        "options": [],
-        "query": {
-          "qryType": 1,
-          "query": "label_values(kube_pod_labels{namespace=\"$namespace\", label_job_name=~\"$label_job_name\", label_project_name=~\"$label_project_name\", pod=~\"$pod\"},label_pipeline_id_pod)",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 2,
@@ -1964,12 +1941,12 @@
     ]
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-30m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Gitlab job monitoring",
   "uid": "ee30moou1dzwgd",
-  "version": 3
+  "version": 4
 }
