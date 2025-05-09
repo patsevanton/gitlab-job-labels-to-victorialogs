@@ -125,16 +125,7 @@ config:
         regex: gitlab-runner
 ```
 
-## Просмотр как это выглядит в VictoriaLogs
 
-1. Зайдите в UI VictoriaLogs (обычно на `/select/`) или подключитесь к Grafana.
-2. Выполните запросы с фильтрацией по `job_id`, `pipeline_id`, например:
-```logql
-{ci_pipeline_id="12345678"}
-```
-
-Теперь вы можете фильтровать логи по job, pipeline и другим CI-метаданным, 
-что значительно упрощает отладку и мониторинг процессов.
 
 
 ## Установка GitLab Runner через Helm:
@@ -209,6 +200,27 @@ build-job:
       fi
 ```
 
+## Просмотр как это выглядит в VictoriaLogs
+
+1. Зайдите в UI VictoriaLogs (обычно на `/select/`) или подключитесь к Grafana.
+2. Выполните запросы с фильтрацией по `job_id`, `pipeline_id`, например:
+```
+pipeline_id: "1809184207" job_id: "9984945726"
+```
+или
+```
+{job_id="9984945726",pipeline_id="1809184207"}
+```
+
+Теперь вы можете фильтровать логи по job, pipeline и другим CI-метаданным,
+что значительно упрощает отладку и мониторинг процессов.
+
+![Скриншот victorialogs](victorialogs.png)
+
+## Grafana Dashboard
+Импортируйте дашборд dashboard.json
+Выглядит вот так:
+![Скриншот Grafana](grafana_screenshot.png)
 
 ## Удаление kubernetes через terraform
 ```shell
