@@ -89,16 +89,10 @@ https://github.com/VictoriaMetrics/helm-charts/blob/master/charts/victoria-metri
 kubectl get secret vmks-grafana -n vmks -o jsonpath='{.data.admin-password}' | base64 --decode
 ```
 
-Вы можете увидеть метрики по pod
-```shell
-node_namespace_pod_container:container_memory_working_set_bytes{namespace="gitlab-runner", pod="runner-3lj4ihzt1-project-69309276-concurrent-0-0066ip3c"}
-```
 
-В Grafana уже будут видны метки, переданные из GitLab Runner (`job_id`, `pipeline_id` и т.д.).
 
 ## Установка Promtail
 
-### Установка Promtail
 ```bash
 helm upgrade --install promtail grafana/promtail \
   --namespace promtail --create-namespace \
@@ -124,8 +118,6 @@ config:
         action: keep
         regex: gitlab-runner
 ```
-
-
 
 
 ## Установка GitLab Runner через Helm:
@@ -176,7 +168,6 @@ runner-sijwob5yi-project-69309276-concurrent-0-pfirp5t5   2/2     Running   0   
 runner-sijwob5yi-project-69309276-concurrent-1-85wx1m9n   2/2     Running   0          44s     ...,job_id=9895041335,job_name=lint-test-job,pipeline_id=1796027502,pod=runner-sijwob5yi-project-69309276-concurrent-1,project_id=69309276,project_name=gitlab-for-job-labels-to-victorialog
 ```
 
-
 ## Отображение failed строк в логах с фильтрацией по `job_id`
 Failed строка появляется не в pod `runner-xxx-project-yyy-concurrent-0-zzz`, а в pod `gitlab-runner-xxx-yyy`. Вот [issue](https://gitlab.com/gitlab-org/gitlab-runner/-/issues/38777)
 Поэтому для отображения failed строк при падении job необходимо использовать after_script с проверкой $CI_JOB_STATUS
@@ -219,10 +210,11 @@ pipeline_id: "1809184207" job_id: "9984945726"
 
 ## Grafana Dashboard
 Импортируйте дашборд dashboard.json
+В Grafana будут видны метки, переданные из GitLab Runner (`job_id`, `pipeline_id` и т.д.).
 Выглядит вот так:
 ![Скриншот Grafana](grafana_screenshot.png)
 
-## Удаление kubernetes через terraform
+## Удаление через terraform
 ```shell
 terraform destroy
 ```
@@ -233,3 +225,5 @@ terraform destroy
 позволяет справляться с большим объемом уникальных меток. Этот подход хорошо масштабируется и обеспечивает гибкую, 
 но мощную систему обсервабилити для CI/CD процессов в Kubernetes. С добавлением всего нескольких строк в конфигурацию 
 вы получаете мощный инструмент для мониторинга и отладки CI/CD pipeline'ов.
+
+## Опрос: Делать ли телеграм канал?
