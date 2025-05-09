@@ -16,8 +16,7 @@
 могут приводить к резкому росту потребления памяти.
 
 - **Экономия ресурсов**: колоночное хранение как ClickHouse с автоматическим сжатием сокращает объём данных на диске в 
-[5–10](https://docs.victoriametrics.com/victorialogs/faq/#what-is-the-difference-between-victorialogs-and-grafana-loki) 
-раз по сравнению с Loki, а также ускоряет аналитические запросы.
+[5–10](https://docs.victoriametrics.com/victorialogs/faq/#what-is-the-difference-between-victorialogs-and-grafana-loki) раз по сравнению с Loki, а также ускоряет аналитические запросы.
 
 - **Простота запросов**: интуитивный язык LogsQL удобен для фильтрации, агрегации и анализа, 
 тогда как LogQL в Loki часто требует сложных конструкций для базовых задач.
@@ -72,7 +71,7 @@ helm upgrade --install vmks vm/victoria-metrics-k8s-stack \
   --values vmks-values.yaml
 ```
 
-В values указываем что kube-state-metrics, разрешая экспорт всех метрик ([*]), связанных с подами (pods).
+В vmks-values.yaml указано что kube-state-metrics, разрешая экспорт всех метрик ([*]), связанных с подами (pods).
 ```shell
 kube-state-metrics:
   metricLabelsAllowlist:
@@ -154,7 +153,6 @@ helm upgrade --install gitlab-runner gitlab/gitlab-runner \
 Пример `gitlab-runner-values.yaml`:
 ```yaml
 gitlabUrl: "https://gitlab.com/"
-runnerToken: "<YOUR_REGISTRATION_TOKEN>"
 runners:
   config: |
     [[runners]]
@@ -184,6 +182,31 @@ runner-sijwob5yi-project-69309276-concurrent-0-7hr533es   2/2     Running   0   
 runner-sijwob5yi-project-69309276-concurrent-0-pfirp5t5   2/2     Running   0          49s     ...,job_id=9895041322,job_name=unit-test-job,pipeline_id=1796027502,pod=runner-sijwob5yi-project-69309276-concurrent-0,project_id=69309276,project_name=gitlab-for-job-labels-to-victorialogs
 runner-sijwob5yi-project-69309276-concurrent-1-85wx1m9n   2/2     Running   0          44s     ...,job_id=9895041335,job_name=lint-test-job,pipeline_id=1796027502,pod=runner-sijwob5yi-project-69309276-concurrent-1,project_id=69309276,project_name=gitlab-for-job-labels-to-victorialog
 ```
+
+
+## Отображение failed строк в логах с фильтрацией по `job_id`
+Failed строка появляется не в pod `runner-xxx-project-yyy-concurrent-0-zzz`, а в pod `gitlab-runner-xxx-yyy`. Вот [issue](https://gitlab.com/gitlab-org/gitlab-runner/-/issues/38777)
+Поэтому для отображения failed строк при падении job необходимо использовать after_script с проверкой $CI_JOB_STATUS
+Пример gitlab-ci.yaml:
+```yaml
+image: alpine:latest
+stages:
+  - build
+  - test
+  - deploy
+build-job:
+  stage: build
+  script:
+    - echo "$CI_JOB_ID"
+    - exit 1
+  allow_failure: true
+  after_script:
+    - |
+      if [ "$CI_JOB_STATUS" != "success" ]; then
+        echo "ERROR: Job failed: command terminated with non-zero exit code"
+      fi
+```
+
 
 ## Удаление kubernetes через terraform
 ```shell
