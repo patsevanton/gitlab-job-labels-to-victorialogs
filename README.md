@@ -142,7 +142,7 @@ config:
 helm repo add gitlab https://charts.gitlab.io
 helm repo update
 
-export RUNNER_TOKEN="glrt-xxx.xxxxx"  # Установите gitlab-runner токен
+export RUNNER_TOKEN="glrt-xxx.xxxxx"  # экспортируйте gitlab-runner токен
 
 helm upgrade --install gitlab-runner gitlab/gitlab-runner \
   --namespace gitlab-runner --create-namespace \
