@@ -89,8 +89,6 @@ https://github.com/VictoriaMetrics/helm-charts/blob/master/charts/victoria-metri
 kubectl get secret vmks-grafana -n vmks -o jsonpath='{.data.admin-password}' | base64 --decode
 ```
 
-
-
 ## Установка Promtail
 
 ```bash
