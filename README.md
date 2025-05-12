@@ -112,9 +112,30 @@ config:
           - filename
           - node_name
     extraRelabelConfigs:
-      - source_labels: [__meta_kubernetes_namespace]
-        action: keep
+      - action: keep
+        source_labels:
+          - __meta_kubernetes_namespace
         regex: gitlab-runner
+      - action: replace
+        source_labels:
+          - __meta_kubernetes_pod_label_job_id
+        target_label: job_id
+      - action: replace
+        source_labels:
+          - __meta_kubernetes_pod_label_job_name
+        target_label: job_name
+      - action: replace
+        source_labels:
+          - __meta_kubernetes_pod_label_pipeline_id
+        target_label: pipeline_id
+      - action: replace
+        source_labels:
+          - __meta_kubernetes_pod_label_project_id
+        target_label: project_id
+      - action: replace
+        source_labels:
+          - __meta_kubernetes_pod_label_project_name
+        target_label: project_name
 ```
 
 
