@@ -217,6 +217,10 @@ pipeline_id: "1809184207" job_id: "9984945726"
 terraform destroy
 ```
 
+## Исходный код
+Исходный код находится здесь https://github.com/patsevanton/gitlab-job-labels-to-victorialogs/tree/main
+
+
 ## Заключение
 
 Теперь вы можете легко отслеживать, какие логи/метрики относятся к какому pipeline и job'у. Использование VictoriaLogs 
